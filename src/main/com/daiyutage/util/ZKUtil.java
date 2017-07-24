@@ -1,5 +1,8 @@
 package com.daiyutage.util;
 
+import com.alibaba.fastjson.JSONObject;
+import org.apache.zookeeper.data.Stat;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +13,7 @@ import java.util.Map;
  */
 public class ZKUtil {
 
+    private static Map<String,Object> zkNodeData = new HashMap<>();
     public static void createNode(String node, String data) throws Exception {
         try {
             ZKConnection.getZKClient().create().creatingParentsIfNeeded().forPath(node, data.getBytes());
@@ -31,6 +35,31 @@ public class ZKUtil {
         }
     }
 
+    /**
+     *  获得Node节点的stat信息
+     * @param node
+     * @param stat
+     * @return
+     * @throws Exception
+     */
+    public static String getNode(String node,Stat stat)throws Exception{
+        try {
+            byte[] bytes = ZKConnection.getZKClient().getData().storingStatIn(stat).forPath(node);
+            return new String(bytes);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception(e.getMessage());
+
+        }
+    }
+
+
+    /**
+     * 获得所有节点(包括子节点)
+     * @param node
+     * @return
+     * @throws Exception
+     */
     public static Map getAllNodes(String node) throws Exception {
         try {
             Map map = new HashMap<>();
@@ -40,8 +69,17 @@ public class ZKUtil {
                     node+="/";
                 }
                 String nodeStr = node + s;
-//                System.out.println(node + s + ":" + getNode(node + s));
+                System.out.println(node + s + "-->" + getNode(node + s));
                 map.put(s, getAllNodes(nodeStr));
+                Map<String,Object> nodeInfo = new HashMap<>();
+                Stat stat = new Stat();
+                nodeInfo.put("data",getNode(node + s,stat));
+                nodeInfo.put("czxid",stat.getCzxid());
+                nodeInfo.put("ctime",stat.getCtime());
+                nodeInfo.put("mzxid",stat.getMzxid());
+                nodeInfo.put("mtime",stat.getMtime());
+                nodeInfo.put("pzxid",stat.getPzxid());
+                zkNodeData.put(s,nodeInfo);
                 getAllNodes(node + s);
             }
             System.out.println("map:"+map);
@@ -53,11 +91,18 @@ public class ZKUtil {
 
     }
 
+    /**
+     * 将Map转换为ZsTree的Json格式
+     * @param map
+     * @return
+     */
     public static List<Map<String, Object>> getZsTreeJson(Map<String, Object> map) {
         List<Map<String, Object>> zsTreeList = new ArrayList<>();
         for (Map.Entry<String, Object> m : map.entrySet()) {
             Map<String, Object> node = new HashMap<>();
             node.put("name", m.getKey());
+            System.out.println(JSONObject.toJSONString(zkNodeData.get(m.getKey())));
+            node.put("click","alertNodeInfo('"+ JSONObject.toJSONString(zkNodeData.get(m.getKey()))+"')");
             Map<String, Object> value = (Map<String, Object>) m.getValue();
             if (value.size() == 0) {
                 zsTreeList.add(node);
