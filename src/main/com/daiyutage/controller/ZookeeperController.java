@@ -22,7 +22,7 @@ public class ZookeeperController {
     @RequestMapping("/zookeeper/getAllNodes")
     public HttpResponse getAllZSTreeNode() {
         try {
-            List<Map<String, Object>> zsTreeList = ZKUtil.getZsTreeJson(ZKUtil.getAllNodes("/"));
+            List<Map<String, Object>> zsTreeList = ZKUtil.getZsTreeJson(ZKUtil.getAllNodes(System.getProperty("node")));
             return new HttpResponse(JSONObject.toJSONString(zsTreeList), true, 200);
         } catch (Exception e) {
             return new HttpResponse(e.getMessage(), false, 10001);
