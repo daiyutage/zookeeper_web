@@ -19,7 +19,6 @@ public class App {
 
     public static void main(String[] args) {
         //        System.setProperty("zookeeper.connect","localhost:2181");
-        System.setProperty("zookeeper.connect", "10.201.50.175:2181");
         //        System.setProperty("zookeeper.connect","10.201.80.193:2181");
         if (null == System.getProperty("zookeeper.connect")) {
             System.err.println("require JVM parameter zookeeper.connect : ");
