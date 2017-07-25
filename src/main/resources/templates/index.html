@@ -21,6 +21,11 @@
     <script type="text/javascript" src="zTree_v3-master/js/jquery-1.4.4.min.js" ></script>
     <script type="text/javascript" src="zTree_v3-master/js/jquery.ztree.core.js" ></script>
 </head>
+<style>
+    .key{
+
+    }
+</style>
 <script>
     var zTreeObj;
     var setting = {}
@@ -40,8 +45,15 @@
                 },
              "json");
     });
-    function alertNodeInfo(data) {
-        alert(data);
+    function alertNodeInfo(str) {
+        //替换字符串中的@为 " ,然后将json转换为obj
+        var nodeInfoJson = str.replace(/@/g,"\"");
+        var obj = eval("("+nodeInfoJson+")");
+        $("#show_data").empty();
+        for(var p in obj){
+            var spans = '<span class="key">'+ p + '</span>' + ":" + '<span class="value">'+ obj[p] + '</span><br/><br/>';
+            $("#show_data").append(spans);
+        }
     }
 </script>
 <body>
@@ -53,6 +65,11 @@
         <div>
             <ul id="zookeeper_tree" class="ztree"></ul>
         </div>
+    </div>
+    <div class="col-lg-8" th:background="red">
+         <div id="show_data" style="text-align: center">
+
+         </div>
     </div>
 </div>
 </body>
