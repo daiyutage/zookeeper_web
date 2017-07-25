@@ -50,8 +50,15 @@
         var nodeInfoJson = str.replace(/@/g,"\"");
         var obj = eval("("+nodeInfoJson+")");
         $("#show_data").empty();
+        var dateStr = "";
+        var spans = "";
         for(var p in obj){
-            var spans = '<span class="key">'+ p + '</span>' + ":" + '<span class="value">'+ obj[p] + '</span><br/><br/>';
+            if( p == 'ctime' || p == 'mtime'){
+               dateStr =  new Date(parseInt(obj[p])).toLocaleString().replace(/:\d{1,2}$/,' ');
+                spans = '<span class="key">'+ p + '</span>' + ":" + '<span class="value">'+ dateStr + '</span><br/><br/>';
+            }else{
+                spans = '<span class="key">'+ p + '</span>' + ":" + '<span class="value">'+ obj[p] + '</span><br/><br/>';
+            }
             $("#show_data").append(spans);
         }
     }
