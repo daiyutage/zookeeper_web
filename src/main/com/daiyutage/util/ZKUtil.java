@@ -1,5 +1,6 @@
 package com.daiyutage.util;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.zookeeper.data.Stat;
 
@@ -102,7 +103,10 @@ public class ZKUtil {
             Map<String, Object> node = new HashMap<>();
             node.put("name", m.getKey());
             System.out.println(JSONObject.toJSONString(zkNodeData.get(m.getKey())));
-            node.put("click","alertNodeInfo('"+ JSONObject.toJSONString(zkNodeData.get(m.getKey()))+"')");
+            String nodeInfoJson = JSONObject.toJSONString(zkNodeData.get(m.getKey()));
+            //将Json value的双引号替换为@符号，以免前端zsTree中的click传递参数报错
+            String nodeInfoStr =  nodeInfoJson.replace("\"","@");
+            node.put("click","alertNodeInfo('"+ nodeInfoStr + "')");
             Map<String, Object> value = (Map<String, Object>) m.getValue();
             if (value.size() == 0) {
                 zsTreeList.add(node);
