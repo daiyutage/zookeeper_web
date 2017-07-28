@@ -27,11 +27,14 @@ public class ZKUtil {
     public static String getNode(String node) throws Exception {
         try {
             byte[] bytes = ZKConnection.getZKClient().getData().forPath(node);
+            if(null == bytes) return "";
+            else
             return new String(bytes);
 
         } catch (Exception e) {
             e.printStackTrace();
-            throw new Exception(e.getMessage());
+          //  throw new Exception(e.getMessage());
+            return "null";
 
         }
     }
@@ -46,10 +49,13 @@ public class ZKUtil {
     public static String getNode(String node,Stat stat)throws Exception{
         try {
             byte[] bytes = ZKConnection.getZKClient().getData().storingStatIn(stat).forPath(node);
+            if(null == bytes) return "";
+            else
             return new String(bytes);
         } catch (Exception e) {
             e.printStackTrace();
-            throw new Exception(e.getMessage());
+//            throw new Exception(e.getMessage());
+            return "null";
 
         }
     }
@@ -111,7 +117,7 @@ public class ZKUtil {
             if (value.size() == 0) {
                 zsTreeList.add(node);
             } else {
-                node.put("open", true);
+                node.put("open", false);
                 node.put("children", getZsTreeJson(value));
                 zsTreeList.add(node);
             }
